@@ -1,0 +1,23 @@
+#配置数据源
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/newcode?serverTimezone=GMT
+    password: root
+    username: root
+  thymeleaf:
+    cache: false
+#thymeleaf缓存关闭
+#视图解析器
+#    prefix: /templates/
+#    suffix: .html
+#配置别名
+mybatis:
+  type-aliases-package: com.example.community.domain
+#设置日志级别
+logging:
+  level:
+    root: info
+#    com.example.community.mapper:info
+
