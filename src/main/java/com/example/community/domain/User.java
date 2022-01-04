@@ -3,10 +3,12 @@ package com.example.community.domain;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 public class User {
-    private Integer id;
+    private int id;
     private String username;
     private String password;
     private String salt;
@@ -15,5 +17,5 @@ public class User {
     private Integer status;
     private String activationCode;
     private String headerUrl;
-    private String createTime;
+    private Date createTime;
 }

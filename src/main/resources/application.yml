@@ -8,6 +8,14 @@ spring:
     username: root
   thymeleaf:
     cache: false
+#    mail
+  mail:
+    host: smtp.sina.com
+    port: 465
+    username: tjr1819324794@sina.com
+    password: b604e35b4201aff1
+    protocol: smtps
+    properties.mail.smtp.ssl.enable: true
 #thymeleaf缓存关闭
 #视图解析器
 #    prefix: /templates/
@@ -15,9 +23,17 @@ spring:
 #配置别名
 mybatis:
   type-aliases-package: com.example.community.domain
+  configuration:
+    use-generated-keys: true
+    map-underscore-to-camel-case: true
 #设置日志级别
 logging:
   level:
     root: info
-#    com.example.community.mapper:info
+#配置端口和网站名
+server:
+  port: 8080
+  servlet:
+    context-path: /community
+community.path.domain: http://localhost:8080
 

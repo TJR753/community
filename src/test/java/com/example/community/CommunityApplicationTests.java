@@ -1,11 +1,14 @@
 package com.example.community;
 
 import com.example.community.domain.DiscussPost;
+import com.example.community.domain.LoginTicket;
 import com.example.community.domain.User;
 import com.example.community.mapper.DiscussPostMapper;
+import com.example.community.mapper.LoginTicketMapper;
 import com.example.community.mapper.UserMapper;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.UserService;
+import com.example.community.utils.CommunityUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -30,6 +30,8 @@ class CommunityApplicationTests {
     private DiscussPostService discussPostService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
     @Test
     public void test(){
         List<DiscussPost> discussPostList=discussPostService.findDiscussPosts(0,0,10);
@@ -42,5 +44,20 @@ class CommunityApplicationTests {
             map.put("discussPost",dp);
             list.add(map);
         }
+    }
+    @Test
+    public void test1(){
+        LoginTicket ticket = new LoginTicket();
+        ticket.setTicket("123");
+        ticket.setExpired(new Date());
+        ticket.setUserId(1234);
+        loginTicketMapper.insert(ticket);
+    }
+    @Test
+    public void test2(){
+        String p="123";
+        String s = CommunityUtil.generateUUID().substring(0, 5);
+        String s1 = CommunityUtil.md5(p + s);
+        userMapper.updatePasswordByEmail("123@qq.com",s1,s);
     }
 }
