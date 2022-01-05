@@ -7,6 +7,7 @@ import com.example.community.mapper.UserMapper;
 import com.example.community.service.UserService;
 import com.example.community.utils.CommunityConstant;
 import com.example.community.utils.CommunityUtil;
+import com.example.community.utils.HostHolder;
 import com.example.community.utils.MailClient;
 import com.google.code.kaptcha.Producer;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,8 @@ public class UserServiceImpl implements UserService, CommunityConstant {
     private LoginTicketMapper loginTicketMapper;
     @Autowired
     private Producer kaptchaProducer;
+    @Autowired
+    private HostHolder hostHolder;
 
     @Value("${community.path.domain}")
     private String domain;
@@ -171,5 +173,47 @@ public class UserServiceImpl implements UserService, CommunityConstant {
         String salt=CommunityUtil.generateUUID().substring(0,5);
         String md5 = CommunityUtil.md5(password + salt);
         userMapper.updatePasswordByEmail(email,md5,salt);
+    }
+
+    @Override
+    public LoginTicket getLoginTicket(String ticket) {
+        LoginTicket loginTicket=loginTicketMapper.findTicket(ticket);
+        return loginTicket;
+    }
+
+    @Override
+    public void updateHeaderUrl(int id, String headerUrl) {
+        userMapper.updateHeaderUrl(id,headerUrl);
+    }
+
+    @Override
+    public HashMap<String, Object> setPassword(String password, String newPassword, String newSecondPassword) {
+        HashMap<String, Object> map = new HashMap<>();
+        if(StringUtils.isBlank(password)){
+            map.put("passwordMsg","原始密码不能为空");
+            return map;
+        }
+        if(StringUtils.isBlank(newPassword)){
+            map.put("newPasswordMsg","新密码不能为空");
+            return map;
+        }
+        if(StringUtils.isBlank(newSecondPassword)){
+            map.put("newSecondPasswordMsg","确认密码不能为空");
+            return map;
+        }
+        if(!newPassword.equals(newSecondPassword)){
+            map.put("newPasswordMsg","两次输入密码不一致");
+            return map;
+        }
+        User user = userMapper.getUserById(hostHolder.getUser().getId()+"");
+        if(!user.getPassword().equals(CommunityUtil.md5(password+user.getSalt()))){
+            map.put("passwordMsg","密码不正确");
+            return map;
+        }
+        String salt = CommunityUtil.generateUUID().substring(0, 5);
+        String md5 = CommunityUtil.md5(newPassword + salt);
+        userMapper.updatePasswordByEmail(user.getEmail(),md5,salt);
+        map.put("success",true);
+        return map;
     }
 }

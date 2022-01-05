@@ -1,5 +1,6 @@
 package com.example.community.controller;
 
+import com.example.community.annotation.LoginRequired;
 import com.example.community.domain.LoginTicket;
 import com.example.community.service.UserService;
 import com.example.community.utils.CommunityConstant;
@@ -85,11 +86,14 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+    @LoginRequired
     @RequestMapping(value = "/logout",method = RequestMethod.GET)
     public String logout(@CookieValue("ticket")String ticket){
         userService.logout(ticket);
         return "redirect:/index";
     }
+
+    @LoginRequired
     @RequestMapping(value = "/forget",method = RequestMethod.GET)
     public String getForgetPage(){
         return "/site/forget";
@@ -106,6 +110,7 @@ public class LoginController implements CommunityConstant {
         return "/site/login";
     }
 
+    @LoginRequired
     @RequestMapping(path = "/sendVerifyCode",method = RequestMethod.GET)
     public String sendVerifyCode(String email,Model model){
         HashMap<String,Object> map=userService.sendVerifyCode(email);

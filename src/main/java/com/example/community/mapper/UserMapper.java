@@ -1,6 +1,7 @@
 package com.example.community.mapper;
 
 import com.example.community.domain.User;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,7 @@ public interface UserMapper {
 
     @Update("update user set salt=#{salt},password=#{md5} where email=#{email}")
     void updatePasswordByEmail(String email, String md5, String salt);
+
+    @Update("update user set header_url=#{headerUrl} where id=#{id}")
+    void updateHeaderUrl(int id, String headerUrl);
 }

@@ -9,6 +9,7 @@ import com.example.community.mapper.UserMapper;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.UserService;
 import com.example.community.utils.CommunityUtil;
+import com.example.community.utils.SensitiveFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ class CommunityApplicationTests {
     private UserService userService;
     @Autowired
     private LoginTicketMapper loginTicketMapper;
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
     @Test
     public void test(){
         List<DiscussPost> discussPostList=discussPostService.findDiscussPosts(0,0,10);
@@ -59,5 +62,11 @@ class CommunityApplicationTests {
         String s = CommunityUtil.generateUUID().substring(0, 5);
         String s1 = CommunityUtil.md5(p + s);
         userMapper.updatePasswordByEmail("123@qq.com",s1,s);
+    }
+    @Test
+    public void test3(){
+        String text="这里可以赌博，也可以喝酒，吸烟。。。打架等等";
+        String s = sensitiveFilter.filter(text);
+        System.out.println(text);
     }
 }

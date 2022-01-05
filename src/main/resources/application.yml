@@ -36,4 +36,4 @@ server:
   servlet:
     context-path: /community
 community.path.domain: http://localhost:8080
-
+community.path.upload: D:/1-TJR/course-java/project/community/community/src/main/resources/user
