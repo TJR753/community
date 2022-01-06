@@ -1,15 +1,21 @@
 package com.example.community.controller;
 
+import com.example.community.annotation.LoginRequired;
+import com.example.community.domain.Comment;
 import com.example.community.domain.DiscussPost;
 import com.example.community.domain.User;
 import com.example.community.domain.vo.Page;
+import com.example.community.service.CommentService;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.UserService;
+import com.example.community.utils.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,11 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class DiscussPostController {
+public class DiscussPostController implements CommunityConstant {
     @Autowired
     private DiscussPostService discussPostService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(path="/index",method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page){
@@ -41,5 +49,60 @@ public class DiscussPostController {
         }
         model.addAttribute("discussPostList",list);
         return "index";
+    }
+
+    @RequestMapping(value = "/addDiscussPost",method = RequestMethod.POST)
+    @ResponseBody
+    public String addDiscussPost(String title,String content){
+        String json=discussPostService.addDiscussPost(title,content);
+        return json;
+    }
+
+    @LoginRequired
+    @RequestMapping(path = "/getDetail/{id}",method = RequestMethod.GET)
+    public String getDetail(@PathVariable("id")String id,Model model,Page page){
+        //帖子，作者
+        DiscussPost discussPost=discussPostService.findDiscussPostById(id);
+        User user = userService.getUserById(discussPost.getUserId());
+        model.addAttribute("disscussPost",discussPost);
+        model.addAttribute("users",user);
+        //评论，回复
+        page.setLimit(5);
+        page.setPath("/getDetail/"+id);
+        page.setRows(discussPost.getCommentCount());
+        List<Comment> commentList=commentService.findCommentsByEntity(ENTITY_TYPE_POST,id,page.getOffset(),page.getLimit());
+        List<Map<String,Object>> voList=new ArrayList<>();
+        for(Comment comment:commentList){
+            HashMap<String, Object> mapComment = new HashMap<>();
+            //当前评论user
+            User user1 = userService.getUserById(comment.getUserId()+"");
+            //查这条评论的回复
+            List<Comment> replyList = commentService.findCommentsByEntity(ENTITY_TYPE_COMMENT, comment.getId() + "", 0, Integer.MAX_VALUE);
+            List<Map<String,Object>> replyVoList=new ArrayList<>();
+            if(replyList!=null) {
+                for (Comment reply : replyList) {
+                    HashMap<String, Object> mapReply = new HashMap<>();
+                    //回复的人
+                    User user2 = userService.getUserById(reply.getUserId() + "");
+                    mapReply.put("reply",reply);
+                    mapReply.put("user",user2);
+                    //回复的目标
+                    User target=reply.getTargetId()==0?null:userService.getUserById(reply.getTargetId()+"");
+                    mapReply.put("target",target);
+                    replyVoList.add(mapReply);
+                }
+            }
+            //评论
+            mapComment.put("comment",comment);
+            //评论的人
+            mapComment.put("user",user1);
+            mapComment.put("rvl",replyVoList);
+            //回复数量
+            int replyCount=commentService.findCommentCount(ENTITY_TYPE_COMMENT,comment.getId());
+            mapComment.put("replyCount",replyCount);
+            voList.add(mapComment);
+        }
+        model.addAttribute("comments",voList);
+        return "/site/discuss-detail";
     }
 }

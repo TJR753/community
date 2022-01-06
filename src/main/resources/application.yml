@@ -8,6 +8,14 @@ spring:
     username: root
   thymeleaf:
     cache: false
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+      additional-paths: src/main/java #重启目录
+      exclude: WEB-INF/**
+  freemarker:
+    cache: false    #页面不加载缓存，修改即时生效
+
 #    mail
   mail:
     host: smtp.sina.com
@@ -37,3 +45,4 @@ server:
     context-path: /community
 community.path.domain: http://localhost:8080
 community.path.upload: D:/1-TJR/course-java/project/community/community/src/main/resources/user
+

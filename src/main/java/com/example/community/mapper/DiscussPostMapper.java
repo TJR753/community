@@ -10,4 +10,10 @@ public interface DiscussPostMapper {
     List<DiscussPost> findDiscussPosts(int userId, int offset, int limit);
 
     int findDiscussRows(int userId);
+
+    int addDiscussPost(DiscussPost discussPost);
+
+    DiscussPost findDiscussPostById(String id);
+
+    int updateCommentCount(Integer commentCount, String discussPostId);
 }

@@ -7,6 +7,7 @@ import com.example.community.mapper.DiscussPostMapper;
 import com.example.community.mapper.LoginTicketMapper;
 import com.example.community.mapper.UserMapper;
 import com.example.community.service.DiscussPostService;
+import com.example.community.service.Impl.TestService;
 import com.example.community.service.UserService;
 import com.example.community.utils.CommunityUtil;
 import com.example.community.utils.SensitiveFilter;
@@ -35,6 +36,8 @@ class CommunityApplicationTests {
     private LoginTicketMapper loginTicketMapper;
     @Autowired
     private SensitiveFilter sensitiveFilter;
+    @Autowired
+    private TestService testService;
     @Test
     public void test(){
         List<DiscussPost> discussPostList=discussPostService.findDiscussPosts(0,0,10);
@@ -67,6 +70,10 @@ class CommunityApplicationTests {
     public void test3(){
         String text="这里可以赌博，也可以喝酒，吸烟。。。打架等等";
         String s = sensitiveFilter.filter(text);
-        System.out.println(text);
+        System.out.println(s);
+    }
+    @Test
+    public void test4(){
+        testService.add2();
     }
 }

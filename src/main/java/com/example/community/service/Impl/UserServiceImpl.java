@@ -216,4 +216,10 @@ public class UserServiceImpl implements UserService, CommunityConstant {
         map.put("success",true);
         return map;
     }
+
+    @Override
+    public int getUserByName(String toName) {
+        User user = userMapper.getUserByUserName(toName);
+        return user.getId();
+    }
 }

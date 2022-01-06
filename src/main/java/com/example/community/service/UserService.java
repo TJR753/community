@@ -29,4 +29,6 @@ public interface UserService {
     void updateHeaderUrl(int id, String headerUrl);
 
     HashMap<String, Object> setPassword(String password, String newPassword, String newSecondPassword);
+
+    int getUserByName(String toName);
 }
