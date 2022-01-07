@@ -24,6 +24,11 @@ spring:
     password: b604e35b4201aff1
     protocol: smtps
     properties.mail.smtp.ssl.enable: true
+    #redis
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
 #thymeleaf缓存关闭
 #视图解析器
 #    prefix: /templates/
@@ -45,4 +50,5 @@ server:
     context-path: /community
 community.path.domain: http://localhost:8080
 community.path.upload: D:/1-TJR/course-java/project/community/community/src/main/resources/user
+
 

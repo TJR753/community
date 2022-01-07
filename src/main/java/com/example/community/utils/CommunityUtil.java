@@ -25,5 +25,11 @@ public class CommunityUtil {
         json.put("msg",msg);
         return json.toString();
     }
-
+    public static String parseJson(String code,String msg,Object o){
+        JSONObject json = new JSONObject();
+        json.put("code",code);
+        json.put("msg",msg);
+        json.put("map",o);
+        return json.toString();
+    }
 }
