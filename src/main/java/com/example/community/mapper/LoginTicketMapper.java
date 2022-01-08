@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Deprecated
 public interface LoginTicketMapper {
 
     @Insert("insert into login_ticket(user_id,ticket,status,expired) values(#{userId},#{ticket},#{status},#{expired})")

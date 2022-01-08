@@ -44,7 +44,7 @@ public class MessageController {
             map.put("unread",unreadLetterCount);
             map.put("read",letterCount);
             int fromId=user.getId()==m.getFromId()?m.getToId():m.getFromId();
-            User user1 = userService.getUserById(fromId+"");
+            User user1 = userService.getUserById(fromId);
             map.put("from",user1);
             voList.add(map);
         }
@@ -62,7 +62,7 @@ public class MessageController {
         List<Map<String,Object>> voList=new ArrayList<>();
         for(Message m:messages){
             HashMap<String, Object> map = new HashMap<>();
-            User from = userService.getUserById(m.getFromId()+"");
+            User from = userService.getUserById(m.getFromId());
             map.put("from",from);
             map.put("message",m);
             voList.add(map);
@@ -78,9 +78,9 @@ public class MessageController {
         int id1=Integer.parseInt(s[0]);
         int id2=Integer.parseInt(s[1]);
         if(hostHolder.getUser().getId()==id1){
-            return userService.getUserById(id2+"");
+            return userService.getUserById(id2);
         }else{
-            return userService.getUserById(id1+"");
+            return userService.getUserById(id1);
         }
     }
     @RequestMapping(path = "/add",method = RequestMethod.POST)

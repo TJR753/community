@@ -22,4 +22,5 @@ public interface MessageService {
     int updateStatus(String userId,String conversationId);
 
     int updateStatusById(int id);
+
 }

@@ -49,7 +49,7 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         DiscussPost discussPost = new DiscussPost();
         discussPost.setTitle(titleHtml);
         discussPost.setContent(contentHtml);
-        discussPost.setUserId(user.getId()+"");
+        discussPost.setUserId(user.getId());
         discussPost.setType(0);
         discussPost.setStatus(0);
         discussPost.setCreateTime(new Date());
@@ -64,5 +64,10 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     public DiscussPost findDiscussPostById(String id) {
         DiscussPost discussPost=discussPostMapper.findDiscussPostById(id);
         return discussPost;
+    }
+
+    @Override
+    public List<DiscussPost> getMyPost(int userId) {
+        return discussPostMapper.getMyPost(userId);
     }
 }

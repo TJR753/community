@@ -12,4 +12,6 @@ public interface CommentMapper {
     int findCommentCount(int entityType, int entityId);
 
     int add(Comment comment);
+    //查找我的回复，entityType为1
+    List<Comment> getMyReply(int userId);
 }

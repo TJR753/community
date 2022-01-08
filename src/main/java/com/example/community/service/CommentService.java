@@ -12,4 +12,6 @@ public interface CommentService {
     int add(Comment comment);
 
     int updateCommentCount(Integer commentCount, String discussPostId);
+
+    List<Comment> getMyReply(int userId);
 }

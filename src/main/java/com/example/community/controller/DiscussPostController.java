@@ -97,7 +97,7 @@ public class DiscussPostController implements CommunityConstant {
         for(Comment comment:commentList){
             HashMap<String, Object> mapComment = new HashMap<>();
             //当前评论user
-            User user1 = userService.getUserById(comment.getUserId()+"");
+            User user1 = userService.getUserById(comment.getUserId());
             //查这条评论的回复
             List<Comment> replyList = commentService.findCommentsByEntity(ENTITY_TYPE_COMMENT, comment.getId() + "", 0, Integer.MAX_VALUE);
             List<Map<String,Object>> replyVoList=new ArrayList<>();
@@ -105,11 +105,11 @@ public class DiscussPostController implements CommunityConstant {
                 for (Comment reply : replyList) {
                     HashMap<String, Object> mapReply = new HashMap<>();
                     //回复的人
-                    User user2 = userService.getUserById(reply.getUserId() + "");
+                    User user2 = userService.getUserById(reply.getUserId());
                     mapReply.put("reply",reply);
                     mapReply.put("user",user2);
                     //回复的目标
-                    User target=reply.getTargetId()==0?null:userService.getUserById(reply.getTargetId()+"");
+                    User target=reply.getTargetId()==0?null:userService.getUserById(reply.getTargetId());
                     mapReply.put("target",target);
 
                     likeCount = likeService.likeCount(ENTITY_TYPE_COMMENT, reply.getId());

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface UserService {
-    User getUserById(String userId);
+    User getUserById(int userId);
 
     Map<String, Object> register(User user);
 

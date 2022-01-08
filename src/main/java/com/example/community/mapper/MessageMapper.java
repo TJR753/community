@@ -24,4 +24,5 @@ public interface MessageMapper {
     int updateStatus(String userId,String conversationId);
 
     int updateStatusById(int id);
+
 }

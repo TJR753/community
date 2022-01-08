@@ -42,4 +42,8 @@
     <update id="updateCommentCount">
         update discuss_post set comment_count = #{commentCount} where id=#{discussPostId}
     </update>
+    <select id="getMyPost" resultType="discussPost">
+        select <include refid="selectFields"></include> from discuss_post
+        where status!=2 and user_id=#{userId}
+    </select>
 </mapper>

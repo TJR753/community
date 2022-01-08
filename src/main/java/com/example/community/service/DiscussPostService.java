@@ -12,4 +12,6 @@ public interface DiscussPostService {
     String addDiscussPost(String title, String content);
 
     DiscussPost findDiscussPostById(String id);
+
+    List<DiscussPost> getMyPost(int userId);
 }

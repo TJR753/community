@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @Component
+@Deprecated
 public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private UserService userService;
@@ -27,7 +28,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         if(ticket!=null){
             LoginTicket loginTicket=userService.getLoginTicket(ticket);
             if(loginTicket!=null&&loginTicket.getStatus()!=1&&loginTicket.getExpired().after(new Date())){
-                User user = userService.getUserById(loginTicket.getUserId() + "");
+                User user = userService.getUserById(loginTicket.getUserId());
                 hostHolder.setUser(user);
             }
         }

@@ -40,4 +40,9 @@ public class CommentServiceImpl implements CommentService {
     public int updateCommentCount(Integer commentCount, String discussPostId) {
         return discussPostMapper.updateCommentCount(commentCount,discussPostId);
     }
+
+    @Override
+    public List<Comment> getMyReply(int userId) {
+        return commentMapper.getMyReply(userId);
+    }
 }

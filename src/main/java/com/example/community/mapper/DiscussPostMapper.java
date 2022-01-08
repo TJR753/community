@@ -16,4 +16,6 @@ public interface DiscussPostMapper {
     DiscussPost findDiscussPostById(String id);
 
     int updateCommentCount(Integer commentCount, String discussPostId);
+    //查找我的贴子，拉黑的不找
+    List<DiscussPost> getMyPost(int userId);
 }

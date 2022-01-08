@@ -9,7 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class DiscussPost {
     private Integer id;
-    private String userId;
+    private Integer userId;
     private String title;
     private String content;
     private Integer type;

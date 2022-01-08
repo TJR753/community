@@ -1,20 +1,18 @@
 package com.example.community.controller;
 
 import com.example.community.annotation.LoginRequired;
+import com.example.community.domain.Comment;
+import com.example.community.domain.DiscussPost;
 import com.example.community.domain.User;
-import com.example.community.service.FollowService;
-import com.example.community.service.LikeService;
-import com.example.community.service.UserService;
-import com.example.community.utils.CommunityConstant;
-import com.example.community.utils.CommunityUtil;
-import com.example.community.utils.CookieUtil;
-import com.example.community.utils.HostHolder;
+import com.example.community.domain.vo.Page;
+import com.example.community.service.*;
+import com.example.community.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +26,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/user")
@@ -50,6 +51,12 @@ public class UserController implements CommunityConstant {
     private LikeService likeService;
     @Autowired
     private FollowService followService;
+    @Autowired
+    private DiscussPostService discussPostService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private CommentService commentService;
 
     @LoginRequired
     @RequestMapping(path = "/setting",method = RequestMethod.GET)
@@ -125,7 +132,7 @@ public class UserController implements CommunityConstant {
 
     @RequestMapping(path = "/profile/{userId}",method = RequestMethod.GET)
     public String userDetail(@PathVariable("userId")int userId,Model model){
-        User user = userService.getUserById(userId+"");
+        User user = userService.getUserById(userId);
         if(user==null){
             throw new RuntimeException("该用户不存在");
         }
@@ -143,5 +150,44 @@ public class UserController implements CommunityConstant {
         model.addAttribute("followerCount",followerCount);
         model.addAttribute("hasFollowed",hasFollowed);
         return "/site/profile";
+    }
+    @RequestMapping(path = "/getMyPost/{userId}",method = RequestMethod.GET)
+    public String getMyPost(Model model, Page page,@PathVariable("userId")Integer userId){
+        page.setLimit(5);
+        page.setPath("/getMyPost/"+userId);
+        List<DiscussPost> postList = discussPostService.getMyPost(userId);
+        model.addAttribute("postCount",postList.size());
+        page.setRows(postList.size());
+        ArrayList<Map<String, Object>> list = new ArrayList<>();
+        for(DiscussPost dp:postList){
+            HashMap<String, Object> map = new HashMap<>();
+            String entityLikeKey = RedisKeyUtil.getEntityLikeKey(ENTITY_TYPE_POST, dp.getId());
+            Long likeCount = redisTemplate.opsForSet().size(entityLikeKey);
+            map.put("post",dp);
+            map.put("likeCount",likeCount);
+            list.add(map);
+        }
+        model.addAttribute("postList",list);
+        model.addAttribute("users",userService.getUserById(userId));
+        return "/site/my-post";
+    }
+    @RequestMapping(path = "/getMyReply/{userId}",method = RequestMethod.GET)
+    public String getMyReply(Model model,Page page,@PathVariable("userId")Integer userId){
+        page.setLimit(5);
+        page.setPath("/getMyReply"+userId);
+        List<Comment> myReply = commentService.getMyReply(userId);
+        page.setRows(myReply.size());
+        ArrayList<Map<String, Object>> list = new ArrayList<>();
+        for(Comment c:myReply){
+            HashMap<String, Object> map = new HashMap<>();
+            DiscussPost discussPost = discussPostService.findDiscussPostById(c.getEntityId()+"");
+            map.put("comment",c);
+            map.put("post",discussPost);
+            list.add(map);
+        }
+        model.addAttribute("myReply",list);
+        model.addAttribute("myReplyCount",myReply.size());
+        model.addAttribute("users",userService.getUserById(userId));
+        return "/site/my-reply";
     }
 }
