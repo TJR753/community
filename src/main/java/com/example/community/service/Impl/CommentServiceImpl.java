@@ -45,4 +45,9 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> getMyReply(int userId) {
         return commentMapper.getMyReply(userId);
     }
+
+    @Override
+    public Comment findComment(int entityId) {
+        return commentMapper.findComment(entityId);
+    }
 }

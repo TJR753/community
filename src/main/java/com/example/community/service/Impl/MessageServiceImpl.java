@@ -51,4 +51,29 @@ public class MessageServiceImpl implements MessageService {
     public int updateStatusById(int id) {
         return messageMapper.updateStatusById(id);
     }
+
+    @Override
+    public int findNoticeCount(String topic, int userId) {
+        return messageMapper.findNoticeCount(topic,userId);
+    }
+
+    @Override
+    public int findNoticeUnreadCount(String topic, int userId) {
+        return messageMapper.findNoticeUnreadCount(topic,userId);
+    }
+
+    @Override
+    public Message findLatestNotice(String topic, int userId) {
+        return messageMapper.findLatestNotice(topic, userId);
+    }
+
+    @Override
+    public List<Message> findNoticeByTopic(String topic, int userId, int offset, int limit) {
+        return messageMapper.findNoticeByTopic(topic,userId,offset,limit);
+    }
+
+    @Override
+    public int readMessage(String topic, int id){
+        return messageMapper.readMessage(topic,id);
+    }
 }

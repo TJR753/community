@@ -33,4 +33,20 @@ public interface CommunityConstant {
      * 实体类型: 人
      */
     int ENTITY_TYPE_USER=3;
+    /**
+     * 消息主题：关注
+     */
+    String TOPIC_FOLLOW="follow";
+    /**
+     * 消息主题：评论
+     */
+    String TOPIC_COMMENT="comment";
+    /**
+     * 消息主题：点赞
+     */
+    String TOPIC_LIKE="like";
+    /**
+     * 系统用户id
+     */
+    int SYSTEM_USER_ID=1;
 }

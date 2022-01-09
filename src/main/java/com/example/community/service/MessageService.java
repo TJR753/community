@@ -23,4 +23,15 @@ public interface MessageService {
 
     int updateStatusById(int id);
 
+    //某个主题的通知数量
+    int findNoticeCount(String topic,int userId);
+    //某个主题未读数量
+    int findNoticeUnreadCount(String topic,int userId);
+    //某个主题最新的一条信息
+    Message findLatestNotice(String topic,int userId);
+
+    List<Message> findNoticeByTopic(String topic, int userId, int offset, int limit);
+
+
+    int readMessage(String topic, int id);
 }

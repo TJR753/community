@@ -74,6 +74,6 @@ class CommunityApplicationTests {
     }
     @Test
     public void test4(){
-        testService.add2();
+
     }
 }

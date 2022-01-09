@@ -14,4 +14,6 @@ public interface CommentService {
     int updateCommentCount(Integer commentCount, String discussPostId);
 
     List<Comment> getMyReply(int userId);
+
+    Comment findComment(int entityId);
 }

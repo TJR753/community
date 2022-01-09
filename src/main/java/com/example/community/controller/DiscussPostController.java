@@ -5,10 +5,7 @@ import com.example.community.domain.Comment;
 import com.example.community.domain.DiscussPost;
 import com.example.community.domain.User;
 import com.example.community.domain.vo.Page;
-import com.example.community.service.CommentService;
-import com.example.community.service.DiscussPostService;
-import com.example.community.service.LikeService;
-import com.example.community.service.UserService;
+import com.example.community.service.*;
 import com.example.community.utils.CommunityConstant;
 import com.example.community.utils.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,8 @@ public class DiscussPostController implements CommunityConstant {
     private LikeService likeService;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private MessageService messageService;
 
     @RequestMapping(path="/index",method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page){
@@ -64,6 +63,13 @@ public class DiscussPostController implements CommunityConstant {
             list.add(map);
         }
         model.addAttribute("discussPostList",list);
+        if(hostHolder.getUser()!=null){
+            User user = hostHolder.getUser();
+            int unReadNoticeCount = messageService.findNoticeUnreadCount(null, user.getId());
+            int unreadLetterCount = messageService.selectUnreadLetterCount(user.getId(), null);
+            model.addAttribute("unReadCount",unReadNoticeCount+unreadLetterCount);
+        }
+
         return "index";
     }
 
