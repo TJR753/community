@@ -38,14 +38,7 @@ public class CommentController implements CommunityConstant {
         comment.setStatus(0);
         comment.setCreateTime(new Date());
         commentService.add(comment);
-        /**
-         * 如果是post，则需要更新帖子数量
-         */
         DiscussPost discussPost=null;
-        if(comment.getEntityType()==ENTITY_TYPE_POST){
-            discussPost = discussPostService.findDiscussPostById(discussPostId);
-            commentService.updateCommentCount(discussPost.getCommentCount(),discussPostId);
-        }
         /**
          * 触发评论事件，推送系统通知
          */
@@ -57,12 +50,25 @@ public class CommentController implements CommunityConstant {
                 .setData("postId",discussPostId);
         //获得作者id
         if(comment.getEntityType()==ENTITY_TYPE_POST){
+
+            //更新帖子数量
+            discussPost = discussPostService.findDiscussPostById(discussPostId);
             event.setEntityUserId(discussPost.getUserId());
+            commentService.updateCommentCount(discussPost.getCommentCount(),discussPostId);
         }else{
             //评论是对某个人的评论
             Comment comment1=commentService.findComment(comment.getEntityId());
             event.setEntityUserId(comment1.getUserId());
         }
+        eventProducer.fireEvent(event);
+
+        //是post，则触发es事件
+        event = new Event().setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityId(comment.getEntityId())
+                .setEntityType(comment.getEntityType())
+                .setEntityUserId(comment.getUserId())
+                .setData("postId", discussPostId);
         eventProducer.fireEvent(event);
         return "redirect:/getDetail/"+discussPostId;
     }

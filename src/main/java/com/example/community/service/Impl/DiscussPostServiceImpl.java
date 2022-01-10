@@ -1,9 +1,13 @@
 package com.example.community.service.Impl;
 
 import com.example.community.domain.DiscussPost;
+import com.example.community.domain.Event;
 import com.example.community.domain.User;
+import com.example.community.event.EventProducer;
 import com.example.community.mapper.DiscussPostMapper;
+import com.example.community.mapper.elasticsearch.DiscussPostRepository;
 import com.example.community.service.DiscussPostService;
+import com.example.community.utils.CommunityConstant;
 import com.example.community.utils.CommunityUtil;
 import com.example.community.utils.HostHolder;
 import com.example.community.utils.SensitiveFilter;
@@ -15,13 +19,17 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class DiscussPostServiceImpl implements DiscussPostService {
+public class DiscussPostServiceImpl implements DiscussPostService, CommunityConstant {
     @Autowired
     private DiscussPostMapper discussPostMapper;
     @Autowired
     private SensitiveFilter sensitiveFilter;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private DiscussPostRepository discussPostRepository;
+    @Autowired
+    private EventProducer eventProducer;
     @Override
     public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit) {
         List<DiscussPost> discussPostList=discussPostMapper.findDiscussPosts(userId,offset,limit);
@@ -57,6 +65,14 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         discussPost.setScore(0.0);
         discussPostMapper.addDiscussPost(discussPost);
         String json = CommunityUtil.parseJson("0", "发布成功");
+        //发帖触发es事件
+        Event event = new Event().setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(discussPost.getType())
+                .setEntityId(discussPost.getId())
+                .setEntityUserId(discussPost.getUserId())
+                .setData("postId", discussPost.getId());
+        eventProducer.fireEvent(event);
         return json;
     }
 

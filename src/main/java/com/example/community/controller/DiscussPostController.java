@@ -5,6 +5,7 @@ import com.example.community.domain.Comment;
 import com.example.community.domain.DiscussPost;
 import com.example.community.domain.User;
 import com.example.community.domain.vo.Page;
+import com.example.community.mapper.elasticsearch.DiscussPostRepository;
 import com.example.community.service.*;
 import com.example.community.utils.CommunityConstant;
 import com.example.community.utils.HostHolder;
