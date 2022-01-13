@@ -9,6 +9,8 @@ public class RedisKeyUtil {
     private static final String PREFIX_KAPTCHA="kaptcha";
     private static final String PREFIX_TICKET="ticket";
     private static final String PREFIX_USER="user";
+    private static final String PREFIX_UV="uv";
+    private static final String PREFIX_DAU="dau";
 
     //某个实体的赞
     //like:entity:entityType:entityId->set(user)
@@ -34,12 +36,38 @@ public class RedisKeyUtil {
     public static String getKaptchaKey(String owner){
         return PREFIX_KAPTCHA+SPLIT+owner;
     }
-    //用户登录凭证
+    /**
+     * 用户登录凭证
+     */
     public static String getTicketKey(String ticket){
         return PREFIX_TICKET+SPLIT+ticket;
     }
     //缓存用户信息
     public static String getUserKey(int userId){
         return PREFIX_USER+SPLIT+userId;
+    }
+
+    /**
+     * 独立访客主键
+     * @param date 日期
+     * @return UV的redisKey
+     */
+    public static String getUVKey(String ip){
+        return PREFIX_UV+SPLIT+ip;
+    }
+    public static String getUVKey(String start,String end){
+        return PREFIX_UV+SPLIT+start+SPLIT+end;
+    }
+
+    /**
+     * 日活跃主键
+     * @param date 日期
+     * @return DAU的redisKey
+     */
+    public static String getDAUKey(String userId){
+        return PREFIX_UV+SPLIT+userId;
+    }
+    public static String getDAUKey(String start,String end){
+        return PREFIX_UV+SPLIT+start+SPLIT+end;
     }
 }

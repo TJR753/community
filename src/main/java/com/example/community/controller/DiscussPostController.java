@@ -8,6 +8,7 @@ import com.example.community.domain.vo.Page;
 import com.example.community.mapper.elasticsearch.DiscussPostRepository;
 import com.example.community.service.*;
 import com.example.community.utils.CommunityConstant;
+import com.example.community.utils.CommunityUtil;
 import com.example.community.utils.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -145,5 +146,39 @@ public class DiscussPostController implements CommunityConstant {
         }
         model.addAttribute("comments",voList);
         return "/site/discuss-detail";
+    }
+
+    /**
+     * 帖子置顶
+     * @param id 帖子id
+     * @return 0，表示成功
+     */
+    @RequestMapping(path = "/setTop",method = RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id){
+        discussPostService.updateType(id);
+        return CommunityUtil.parseJson("0","置顶成功");
+    }
+    /**
+     * 帖子加精
+     * @param id 帖子id
+     * @return 0，表示成功
+     */
+    @RequestMapping(path = "/setWonderful",method = RequestMethod.POST)
+    @ResponseBody
+    public String setWonderful(int id){
+        discussPostService.updateStatus(id,1);
+        return CommunityUtil.parseJson("0","加精成功");
+    }
+    /**
+     * 帖子删除
+     * @param id 帖子id
+     * @return 0，表示成功
+     */
+    @RequestMapping(path = "/setDelete",method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id){
+        discussPostService.updateStatus(id,2);
+        return CommunityUtil.parseJson("0","删除成功");
     }
 }

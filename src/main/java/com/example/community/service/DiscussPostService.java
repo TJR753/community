@@ -14,4 +14,8 @@ public interface DiscussPostService {
     DiscussPost findDiscussPostById(String id);
 
     List<DiscussPost> getMyPost(int userId);
+
+    int updateType(int id);
+
+    int updateStatus(int id,int status);
 }

@@ -86,4 +86,35 @@ public class DiscussPostServiceImpl implements DiscussPostService, CommunityCons
     public List<DiscussPost> getMyPost(int userId) {
         return discussPostMapper.getMyPost(userId);
     }
+
+    @Override
+    public int updateType(int id) {
+        discussPostMapper.updateType(id);
+        DiscussPost discussPost = discussPostMapper.findDiscussPostById(id+"");
+        User user = hostHolder.getUser();
+        //发帖触发es事件
+        Event event = new Event().setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(discussPost.getType())
+                .setEntityId(discussPost.getId())
+                .setEntityUserId(discussPost.getUserId())
+                .setData("postId", discussPost.getId());
+        eventProducer.fireEvent(event);
+        return 0;
+    }
+
+    @Override
+    public int updateStatus(int id,int status) {
+        DiscussPost discussPost = discussPostMapper.findDiscussPostById(id+"");
+        User user = hostHolder.getUser();
+        //发帖触发es事件
+        Event event = new Event().setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(discussPost.getType())
+                .setEntityId(discussPost.getId())
+                .setEntityUserId(discussPost.getUserId())
+                .setData("postId", discussPost.getId());
+        eventProducer.fireEvent(event);
+        return discussPostMapper.updateStatus(id,status);
+    }
 }

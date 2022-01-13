@@ -4,8 +4,10 @@ import com.example.community.domain.LoginTicket;
 import com.example.community.domain.User;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.servlet.http.HttpSession;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,4 +33,6 @@ public interface UserService {
     HashMap<String, Object> setPassword(String password, String newPassword, String newSecondPassword);
 
     int getUserByName(String toName);
+
+    Collection<? extends GrantedAuthority> getAuthority(int userId);
 }
