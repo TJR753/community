@@ -30,46 +30,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(
-            "/user/**",
-                        "/message/**",
-                        "/like",
-                        "/follow",
-                        "/unfollow",
-                        "/addDiscussPost",
-                        "/comment/**"
-                ).hasAnyAuthority(
-                        AUTHORITY_USER,AUTHORITY_ADMIN,AUTHORITY_MODERATOR
-                )
                 .anyRequest().permitAll()
                 .and().csrf().disable();
-        http.exceptionHandling()
-            .authenticationEntryPoint(new AuthenticationEntryPoint() {
-                    @Override
-                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-                        String header = request.getHeader("x-requested-with");
-                        if("XMLHttpRequest".equals(header)){
-                            response.setContentType("application/plain;charset=utf-8");
-                            PrintWriter pw = response.getWriter();
-                            pw.println(CommunityUtil.parseJson("403","您还没有登陆"));
-                        }else{
-                            response.sendRedirect(request.getContextPath()+"/login");
-                        }
-                    }
-                })
-            .accessDeniedHandler(new AccessDeniedHandler() {
-                    @Override
-                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-                        String header = request.getHeader("x-requested-with");
-                        if("XMLHttpRequest".equals(header)){
-                            response.setContentType("application/plain;charset=utf-8");
-                            PrintWriter pw = response.getWriter();
-                            pw.println(CommunityUtil.parseJson("403","您没有权限访问"));
-                        }else{
-                            response.sendRedirect(request.getContextPath()+"/index");
-                        }
-                    }
-                });
+
         http.logout().logoutUrl("/override");
     }
 }

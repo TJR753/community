@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,13 +36,20 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private MessageService messageService;
 
+    /**
+     *
+     * @param model
+     * @param page
+     * @param orderMode 0为最新排序，1为最热排序
+     * @return
+     */
     @RequestMapping(path="/index",method = RequestMethod.GET)
-    public String getIndexPage(Model model, Page page){
+    public String getIndexPage(Model model, Page page, @RequestParam(name = "orderMode",defaultValue = "0")int orderMode){
         int rows=discussPostService.findDiscussPostRows(0);
         page.setPath("/index");
         page.setRows(rows);
         //userId,offset,pageSize,不展示status为2的,按照type,createTime排序,分页获得总条数
-        List<DiscussPost> discussPostList=discussPostService.findDiscussPosts(0,page.getOffset(),page.getLimit());
+        List<DiscussPost> discussPostList=discussPostService.findDiscussPosts(0,page.getOffset(),page.getLimit(),orderMode);
 
         ArrayList<Map<String, Object>> list = new ArrayList<>();
         for(DiscussPost dp:discussPostList){
@@ -71,7 +75,7 @@ public class DiscussPostController implements CommunityConstant {
             int unreadLetterCount = messageService.selectUnreadLetterCount(user.getId(), null);
             model.addAttribute("unReadCount",unReadNoticeCount+unreadLetterCount);
         }
-
+        model.addAttribute("orderMode",orderMode);
         return "index";
     }
 

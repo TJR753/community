@@ -13,9 +13,11 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.listener.Topic;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,5 +79,31 @@ public class EventConsumer implements CommunityConstant {
         }
         DiscussPost post = discussPostService.findDiscussPostById(event.getEntityId()+"");
         elasticsearchService.saveDiscussPost(post);
+    }
+
+    @KafkaListener(topics={TOPIC_SHARE})
+    public void handleShare(ConsumerRecord record){
+        if(record==null||record.value()==null){
+            logger.error("信息为空");
+            return;
+        }
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if(event==null){
+            logger.error("消息格式错误");
+            return;
+        }
+        String filename = (String)event.getData().get("filename");
+        String storage = (String)event.getData().get("storage");
+        String suffix = (String)event.getData().get("suffix");
+        String commands = (String)event.getData().get("command");
+        String htmlUrl = (String)event.getData().get("htmlUrl");
+
+        String command=commands+" --quality 75 " + htmlUrl +" "+ storage + "/" + filename + suffix;
+        try {
+            Runtime.getRuntime().exec(command);
+            logger.info("记录执行命令"+command);
+        } catch (IOException e) {
+            logger.error("执行命令发生错误："+command+"  "+e);
+        }
     }
 }

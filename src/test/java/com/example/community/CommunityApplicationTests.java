@@ -38,19 +38,7 @@ class CommunityApplicationTests {
     private SensitiveFilter sensitiveFilter;
     @Autowired
     private TestService testService;
-    @Test
-    public void test(){
-        List<DiscussPost> discussPostList=discussPostService.findDiscussPosts(0,0,10);
-        int total=discussPostService.findDiscussPostRows(0);
-        ArrayList<Map<String, Object>> list = new ArrayList<>();
-        for(DiscussPost dp:discussPostList){
-            HashMap<String, Object> map = new HashMap<>();
-            User user=userService.getUserById(dp.getUserId());
-            map.put("user",user);
-            map.put("discussPost",dp);
-            list.add(map);
-        }
-    }
+
     @Test
     public void test1(){
         LoginTicket ticket = new LoginTicket();
@@ -71,9 +59,5 @@ class CommunityApplicationTests {
         String text="这里可以赌博，也可以喝酒，吸烟。。。打架等等";
         String s = sensitiveFilter.filter(text);
         System.out.println(s);
-    }
-    @Test
-    public void test4(){
-
     }
 }

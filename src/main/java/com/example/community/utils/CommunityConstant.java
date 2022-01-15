@@ -65,4 +65,8 @@ public interface CommunityConstant {
      * 版主：2
      */
     String AUTHORITY_MODERATOR="moderator";
+    /**
+     * 消息主题：生成长图
+     */
+    String TOPIC_SHARE="share";
 }

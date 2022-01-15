@@ -14,18 +14,20 @@ function like(btn,entityType,entityId,entityUserId,postId){
     )
 }
 $(function (){
-    var id=$("#postId").val()
-    $("#top").click(setTop(id))
-    $("#wonderful").click(setWonderful(id))
-    $("#delete").click(setDelete(id))
+    $("#top").click(setTop)
+    $("#wonderful").click(setWonderful)
+    $("#delete").click(setDelete)
 })
-function setTop(id){
+function setTop(){
+    var id=$("#postId").val()
+    alert(1)
     $.post(
         CONTEXT_PATH+"/setTop",
         {"id":id},
         function (data){
             if(data.code==0){
                 $("#top").attr("disabled","disabled")
+                window.location.reload()
             }else{
                 alert(data.msg)
             }
@@ -33,13 +35,15 @@ function setTop(id){
         "json"
     )
 }
-function setWonderful(id){
+function setWonderful(){
+    var id=$("#postId").val()
     $.post(
         CONTEXT_PATH+"/setWonderful",
         {"id":id},
         function (data){
             if(data.code==0){
                 $("#top").attr("disabled","disabled")
+                window.location.reload()
             }else{
                 alert(data.msg)
             }
@@ -47,7 +51,8 @@ function setWonderful(id){
         "json"
     )
 }
-function setDelete(id){
+function setDelete(){
+    var id=$("#postId").val()
     $.post(
         CONTEXT_PATH+"/setDelete",
         {"id":id},

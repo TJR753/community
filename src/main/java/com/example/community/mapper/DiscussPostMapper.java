@@ -7,7 +7,7 @@ import java.util.List;
 
 @Repository
 public interface DiscussPostMapper {
-    List<DiscussPost> findDiscussPosts(int userId, int offset, int limit);
+    List<DiscussPost> findDiscussPosts(int userId, int offset, int limit,int orderMode);
 
     int findDiscussRows(int userId);
 
@@ -21,4 +21,6 @@ public interface DiscussPostMapper {
 
     int updateType(int id);
     int updateStatus(int id,int status);
+
+    int updateScore(double score, int postId);
 }

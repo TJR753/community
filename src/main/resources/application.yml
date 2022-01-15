@@ -38,6 +38,22 @@ spring:
 #      elasticsearch
   elasticsearch:
     uris: http://localhost:9200
+#    TaskExecutionProperties
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+#        TaskSchedulingProperties
+    scheduling:
+      pool:
+        size: 5
+#        quartz
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communityScheduler
+
 #thymeleaf缓存关闭
 #视图解析器
 #    prefix: /templates/
@@ -61,5 +77,9 @@ community.path.domain: http://localhost:8080
 community.path.upload: D:/1-TJR/course-java/project/community/community/src/main/resources/user
 community.elasticsearch.url: localhost:9200
 community.discusspost.indexname: discusspost
+wk.command: D:/wkhtmltox/wkhtmltopdf/bin/wkhtmltoimage
+wk.storage: D:/1-TJR/course-java/project/community/community/src/main/resources/wkImage
+wk.suffix: .png
+
 
 

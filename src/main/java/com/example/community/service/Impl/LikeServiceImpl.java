@@ -50,6 +50,8 @@ public class LikeServiceImpl implements LikeService {
                 return redisTemplate.exec();
             }
         });
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(postScoreKey,entityId);
     }
 
     @Override

@@ -12,4 +12,5 @@ public interface ElasticsearchService {
     void deleteDiscussPost(DiscussPost discussPost);
     //搜索
     List<DiscussPost> searchDiscussPost(String keywords,int current,int limit,String index) throws IOException;
+
 }

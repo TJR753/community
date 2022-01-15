@@ -4,7 +4,9 @@ import com.example.community.domain.Comment;
 import com.example.community.mapper.CommentMapper;
 import com.example.community.mapper.DiscussPostMapper;
 import com.example.community.service.CommentService;
+import com.example.community.utils.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,6 +20,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentMapper commentMapper;
     @Autowired
     private DiscussPostMapper discussPostMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
     @Override
     public List<Comment> findCommentsByEntity(int entityType, String entityId, int offset, int limit) {
         List<Comment> commentList=commentMapper.findCommentsByEntity(entityType,entityId,offset,limit);
@@ -32,6 +36,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED,propagation = Propagation.REQUIRED)
     public int add(Comment comment) {
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(postScoreKey,comment.getEntityId());
         return commentMapper.add(comment);
     }
 

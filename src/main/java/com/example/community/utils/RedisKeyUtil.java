@@ -11,6 +11,7 @@ public class RedisKeyUtil {
     private static final String PREFIX_USER="user";
     private static final String PREFIX_UV="uv";
     private static final String PREFIX_DAU="dau";
+    private static final String PREFIX_POST_SCORE="post";
 
     //某个实体的赞
     //like:entity:entityType:entityId->set(user)
@@ -49,7 +50,7 @@ public class RedisKeyUtil {
 
     /**
      * 独立访客主键
-     * @param date 日期
+     * @param ip 用户ip
      * @return UV的redisKey
      */
     public static String getUVKey(String ip){
@@ -61,7 +62,7 @@ public class RedisKeyUtil {
 
     /**
      * 日活跃主键
-     * @param date 日期
+     * @param userId 用户id
      * @return DAU的redisKey
      */
     public static String getDAUKey(String userId){
@@ -69,5 +70,11 @@ public class RedisKeyUtil {
     }
     public static String getDAUKey(String start,String end){
         return PREFIX_UV+SPLIT+start+SPLIT+end;
+    }
+    /**
+     * 分数主键
+     */
+    public static String getPostScoreKey(){
+        return PREFIX_POST_SCORE+SPLIT+"score";
     }
 }

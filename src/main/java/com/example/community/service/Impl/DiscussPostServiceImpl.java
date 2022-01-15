@@ -7,11 +7,9 @@ import com.example.community.event.EventProducer;
 import com.example.community.mapper.DiscussPostMapper;
 import com.example.community.mapper.elasticsearch.DiscussPostRepository;
 import com.example.community.service.DiscussPostService;
-import com.example.community.utils.CommunityConstant;
-import com.example.community.utils.CommunityUtil;
-import com.example.community.utils.HostHolder;
-import com.example.community.utils.SensitiveFilter;
+import com.example.community.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
@@ -30,9 +28,11 @@ public class DiscussPostServiceImpl implements DiscussPostService, CommunityCons
     private DiscussPostRepository discussPostRepository;
     @Autowired
     private EventProducer eventProducer;
+    @Autowired
+    private RedisTemplate redisTemplate;
     @Override
-    public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit) {
-        List<DiscussPost> discussPostList=discussPostMapper.findDiscussPosts(userId,offset,limit);
+    public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit,int orderMode) {
+        List<DiscussPost> discussPostList=discussPostMapper.findDiscussPosts(userId,offset,limit,orderMode);
         return discussPostList;
     }
 
@@ -73,6 +73,7 @@ public class DiscussPostServiceImpl implements DiscussPostService, CommunityCons
                 .setEntityUserId(discussPost.getUserId())
                 .setData("postId", discussPost.getId());
         eventProducer.fireEvent(event);
+        redisTemplate.opsForSet().add(RedisKeyUtil.getPostScoreKey(),discussPost.getId());
         return json;
     }
 
@@ -115,6 +116,14 @@ public class DiscussPostServiceImpl implements DiscussPostService, CommunityCons
                 .setEntityUserId(discussPost.getUserId())
                 .setData("postId", discussPost.getId());
         eventProducer.fireEvent(event);
+        //储存需要更新的帖子id
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(postScoreKey,id);
         return discussPostMapper.updateStatus(id,status);
+    }
+
+    @Override
+    public int updateScore(double score, int postId) {
+        return discussPostMapper.updateScore(score,postId);
     }
 }
