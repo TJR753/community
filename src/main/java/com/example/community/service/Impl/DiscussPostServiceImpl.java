@@ -8,16 +8,28 @@ import com.example.community.mapper.DiscussPostMapper;
 import com.example.community.mapper.elasticsearch.DiscussPostRepository;
 import com.example.community.service.DiscussPostService;
 import com.example.community.utils.*;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DiscussPostServiceImpl implements DiscussPostService, CommunityConstant {
+    private static final Logger logger= LoggerFactory.getLogger(DiscussPostServiceImpl.class);
+
     @Autowired
     private DiscussPostMapper discussPostMapper;
     @Autowired
@@ -30,14 +42,73 @@ public class DiscussPostServiceImpl implements DiscussPostService, CommunityCons
     private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Value(("${caffeine.posts.max-size}"))
+    private long maxSize;
+    @Value(("${caffeine.posts.expire-seconds}"))
+    private long expireSeconds;
+
+    /**
+     * 缓存最热帖子列表
+     */
+    private LoadingCache<String,List<DiscussPost>> postsCache;
+    /**
+     * 缓存帖子总数
+     */
+    private LoadingCache<Integer,Integer> postRowsCache;
+
+    /**
+     * 初始化帖子列表和帖子总数缓存
+     */
+    @PostConstruct
+    public void init(){
+        postsCache= Caffeine.newBuilder()
+                .maximumSize(maxSize)
+                .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
+                .build(new CacheLoader<String, List<DiscussPost>>() {
+                    @Override
+                    public @Nullable List<DiscussPost> load(@NonNull String key) throws Exception {
+                        if(key==null||key.length()==0){
+                            throw new IllegalArgumentException("参数错误!");
+                        }
+                        String[] params = key.split(",");
+                        if(params==null||params.length!=2){
+                            throw new IllegalArgumentException("参数错误!");
+                        }
+                        int offset=Integer.valueOf(params[0]);
+                        int limit=Integer.valueOf(params[1]);
+                        logger.debug("load from DB");
+                        return discussPostMapper.findDiscussPosts(0,offset,limit,1);
+                    }
+                });
+        postRowsCache=Caffeine.newBuilder()
+                .maximumSize(maxSize)
+                .expireAfterWrite(expireSeconds,TimeUnit.SECONDS)
+                .build(new CacheLoader<Integer, Integer>() {
+                    @Override
+                    public @Nullable Integer load(@NonNull Integer key) throws Exception {
+                        logger.debug("load from DB");
+                        return discussPostMapper.findDiscussRows(key);
+                    }
+                });
+    }
+
     @Override
     public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit,int orderMode) {
+//        只缓存最热，即当userId=0且orderMode=1
+        if(userId==0&&orderMode==1){
+            return postsCache.get(offset+","+limit);
+        }
+        logger.debug("load from DB");
         List<DiscussPost> discussPostList=discussPostMapper.findDiscussPosts(userId,offset,limit,orderMode);
         return discussPostList;
     }
 
     @Override
     public int findDiscussPostRows(int userId) {
+        if(userId==0){
+            return postRowsCache.get(userId);
+        }
+        logger.debug("load from DB");
         int total=discussPostMapper.findDiscussRows(userId);
         return total;
     }

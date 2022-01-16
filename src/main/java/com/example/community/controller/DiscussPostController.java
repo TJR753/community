@@ -36,6 +36,10 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private MessageService messageService;
 
+    @RequestMapping(path = "/",method = RequestMethod.GET)
+    public String root(){
+        return "forward:/index";
+    }
     /**
      *
      * @param model
