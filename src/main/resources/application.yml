@@ -2,4 +2,4 @@ spring:
   profiles:
     active: produce
 logging:
-  config: classpath:logbak-spring-${spring.profiles.active}.xml
+  config: classpath:logback-spring-${spring.profiles.active}.xml

@@ -15,7 +15,11 @@ public class CommunityApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(CommunityApplication.class, args);
+        try{
+            SpringApplication.run(CommunityApplication.class, args);
+        }catch (Exception e){
+            System.out.println(e);
+        }
     }
 
 }
